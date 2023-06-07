@@ -1,7 +1,7 @@
 {
   "name": "hw12",
   "version": "1.0.0",
-  "description": "",
+  "description": "This is a command line application that provides a solution for managing a company's employees using node, inquirer, and MySQL.",
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

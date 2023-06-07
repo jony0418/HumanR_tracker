@@ -1,4 +1,18 @@
 const inquirer = require('inquirer');
+const mysql = require('mysql2');
+
+const connection = mysql.createConnection({
+    host: 'localhost',
+    port: 330,
+    user: 'root',
+    password: 'MyPassword', // replace 'your_mysql_password' with your actual MySQL password
+    database: 'company_db'
+});
+connection.connect((err) => {
+    if (err) throw err;
+    console.log('connected as id ' + connection.threadId + '\n');
+    init();
+});
 
 function init() {
     inquirer
@@ -100,39 +114,48 @@ function addDepartment() {
 
 function addRole() {
     console.log('Adding a role...\n');
-    inquirer
-        .prompt([
-            {
-                name: 'title',
-                type: 'input',
-                message: 'What is the title of the role?',
-            },
-            {
-                name: 'salary',
-                type: 'input',
-                message: 'What is the salary of the role?',
-            },
-            {
-                name: 'department_id',
-                type: 'input',
-                message: 'What is the department id of the role?',
-            },
-        ])
-        .then((answer) => {
-            connection.query(
-                'INSERT INTO role SET ?',
+
+    // First fetch all the departments
+    connection.query('SELECT * FROM department', (err, departments) => {
+        if (err) throw err;
+
+        // Now departments are available here, create the prompts
+        inquirer
+            .prompt([
                 {
-                    title: answer.title,
-                    salary: answer.salary,
-                    department_id: answer.department_id,
+                    name: 'title',
+                    type: 'input',
+                    message: 'What is the title of the role?',
                 },
-                (err) => {
-                    if (err) throw err;
-                    console.log('Your role was created successfully!');
-                    init();
-                }
-            );
-        });
+                {
+                    name: 'salary',
+                    type: 'input',
+                    message: 'What is the salary of the role?',
+                },
+                {
+                    name: 'department_id',
+                    type: 'list',
+                    message: 'What is the department of the role?',
+                    // Generate choices from the departments
+                    choices: departments.map(department => ({ name: department.name, value: department.id }))
+                },
+            ])
+            .then((answer) => {
+                connection.query(
+                    'INSERT INTO role SET ?',
+                    {
+                        title: answer.title,
+                        salary: answer.salary,
+                        department_id: answer.department_id,
+                    },
+                    (err) => {
+                        if (err) throw err;
+                        console.log('Your role was created successfully!');
+                        init();
+                    }
+                );
+            });
+    });
 }
 
 function addEmployee() {
@@ -213,4 +236,3 @@ function updateEmployeeRole() {
         });
 }
 
-init();

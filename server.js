@@ -160,29 +160,42 @@ function addRole() {
 
 function addEmployee() {
     console.log('Adding an employee...\n');
-    inquirer
-        .prompt([
-            {
-                name: 'first_name',
-                type: 'input',
-                message: 'What is the first name of the employee?',
-            },
-            {
-                name: 'last_name',
-                type: 'input',
-                message: 'What is the last name of the employee?',
-            },
-            {
-                name: 'role_id',
-                type: 'input',
-                message: 'What is the role id of the employee?',
-            },
-            {
-                name: 'manager_id',
-                type: 'input',
-                message: 'What is the manager id of the employee?',
-            },
-        ])
+    let roleChoices;
+    let managerChoices;
+
+    connection.promise().query('SELECT * FROM role')
+        .then(([rows, fields]) => {
+            roleChoices = rows.map(row => ({ name: row.title, value: row.id }));
+            return connection.promise().query('SELECT * FROM employee');
+        })
+        .then(([rows, fields]) => {
+            managerChoices = rows.map(row => ({ name: `${row.first_name} ${row.last_name}`, value: row.id }));
+            managerChoices.push({ name: "None", value: null }); //Adding null option
+            return inquirer.prompt([
+                {
+                    name: 'first_name',
+                    type: 'input',
+                    message: 'What is the first name of the employee?',
+                },
+                {
+                    name: 'last_name',
+                    type: 'input',
+                    message: 'What is the last name of the employee?',
+                },
+                {
+                    name: 'role_id',
+                    type: 'list',
+                    message: 'What is the role of the employee?',
+                    choices: roleChoices
+                },
+                {
+                    name: 'manager_id',
+                    type: 'list',
+                    message: 'Who is the manager of the employee?',
+                    choices: managerChoices
+                },
+            ])
+        })
         .then((answer) => {
             connection.query(
                 'INSERT INTO employee SET ?',
@@ -203,19 +216,31 @@ function addEmployee() {
 
 function updateEmployeeRole() {
     console.log('Updating an employee role...\n');
-    inquirer
-        .prompt([
-            {
-                name: 'employee_id',
-                type: 'input',
-                message: 'What is the id of the employee?',
-            },
-            {
-                name: 'role_id',
-                type: 'input',
-                message: 'What is the new role id of the employee?',
-            },
-        ])
+    let employeeChoices;
+    let roleChoices;
+
+    connection.promise().query('SELECT * FROM employee')
+        .then(([rows, fields]) => {
+            employeeChoices = rows.map(row => ({ name: `${row.first_name} ${row.last_name}`, value: row.id }));
+            return connection.promise().query('SELECT * FROM role');
+        })
+        .then(([rows, fields]) => {
+            roleChoices = rows.map(row => ({ name: row.title, value: row.id }));
+            return inquirer.prompt([
+                {
+                    name: 'employee_id',
+                    type: 'list',
+                    message: 'Which employee\'s role do you want to update?',
+                    choices: employeeChoices
+                },
+                {
+                    name: 'role_id',
+                    type: 'list',
+                    message: 'What is the new role of the employee?',
+                    choices: roleChoices
+                },
+            ])
+        })
         .then((answer) => {
             connection.query(
                 'UPDATE employee SET ? WHERE ?',

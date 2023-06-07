@@ -17,7 +17,7 @@ This application will allow users to:
 ## Installation
 
 1. Clone the repository to your local machine: git clone https://github.com/jony0418/HumanR_tracker.git
-2. Navigate to the project folder: `cd yourprojectname`
+2. Navigate to the project folder: `cd humanr_tracker`
 3. Install the necessary packages: `npm install`
 4. Run the MySQL commands to set up the database: `source db/schema.sql` and `source db/seed.sql`
 5. Start the application: node index.js

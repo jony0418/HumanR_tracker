@@ -13,6 +13,6 @@ VALUES
 INSERT INTO employee (first_name, last_name, role_id, manager_id)
 VALUES 
 ('John', 'Doe', (SELECT id FROM role WHERE title = 'Sales Manager'), NULL),
-('Jane', 'Smith', (SELECT id FROM role WHERE title = 'Software Engineer'), (SELECT id FROM employee WHERE first_name = 'John' AND last_name = 'Doe')),
-('Alice', 'Johnson', (SELECT id FROM role WHERE title = 'HR Manager'), (SELECT id FROM employee WHERE first_name = 'John' AND last_name = 'Doe')),
-('Bob', 'Brown', (SELECT id FROM role WHERE title = 'Marketing Manager'), (SELECT id FROM employee WHERE first_name = 'John' AND last_name = 'Doe'));
+('Jane', 'Smith', (SELECT id FROM role WHERE title = 'Software Engineer'), '1'),
+('Alice', 'Johnson', (SELECT id FROM role WHERE title = 'HR Manager'), '1'),
+('Bob', 'Brown', (SELECT id FROM role WHERE title = 'Marketing Manager'), '1');
